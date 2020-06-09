@@ -111,7 +111,7 @@ public class ToDoMain implements Commands {
                     printToDos(toDoManager.getAllToDosByUserAndStatus(currentUser.getId(), ToDoStatus.TODO));
                     break;
                 case MY_IN_PROGRESS_LIST:
-                    printToDos(toDoManager.getAllToDosByUserAndStatus(currentUser.getId(), ToDoStatus.TODO));
+                    printToDos(toDoManager.getAllToDosByUserAndStatus(currentUser.getId(), ToDoStatus.IN_PROGRESS));
                     break;
                 case MY_FINISHED_LIST:
                     printToDos(toDoManager.getAllToDosByUserAndStatus(currentUser.getId(), ToDoStatus.FINISHED));
@@ -131,19 +131,32 @@ public class ToDoMain implements Commands {
 
     private static void addNewToDo() {
         System.out.println("Please input data to add new ToDo");
+        ToDo toDo = new ToDo();
         System.out.print("Title: ");
         String toDoTitle = scanner.nextLine();
-        System.out.print("Deadline (yyyy-MM-dd HH:mm:ss): ");
-        String toDoDeadline = scanner.nextLine();
-        ToDo toDo = new ToDo();
-        toDo.setTitle(toDoTitle);
+        Commands.deadLineCommands();
+        int command;
         try {
-            if (toDoDeadline != null) {
-                toDo.setDeadline(sdf.parse(toDoDeadline));
-            }
-        } catch (ParseException e) {
-            System.out.println("");
+            command = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            command = -1;
         }
+        switch (command) {
+            case ADD:
+                System.out.print("Deadline (yyyy-MM-dd HH:mm:ss): ");
+                String toDoDeadline = scanner.nextLine();
+                try {
+                    if (toDoDeadline != null) {
+                        toDo.setDeadline(sdf.parse(toDoDeadline));
+                    }
+                } catch (ParseException e) {
+                    System.out.println("");
+                }
+                break;
+            case DISMISS:
+                break;
+        }
+        toDo.setTitle(toDoTitle);
         toDo.setStatus(ToDoStatus.TODO);
         toDo.setUser(currentUser);
         if (toDoManager.create(toDo)) {
@@ -161,7 +174,7 @@ public class ToDoMain implements Commands {
 
 
     private static void changeToDoStatus() {
-        System.out.println("Please choose Todo from list:");
+        System.out.println("Please choose Todo id from list:");
         List<ToDo> allToDosByUser = toDoManager.getAllToDosByUser(currentUser.getId());
         for (ToDo toDo : allToDosByUser) {
             System.out.println(toDo);
@@ -170,6 +183,7 @@ public class ToDoMain implements Commands {
         long id = Long.parseLong(scanner.nextLine());
         ToDo byId = toDoManager.getById(id);
         if (byId.getUser().getId() == currentUser.getId()) {
+            System.out.println("Current status is: " + byId.getStatus());
             System.out.println("Please choose status: " + Arrays.toString(ToDoStatus.values()));
             ToDoStatus status = ToDoStatus.valueOf(scanner.nextLine().toUpperCase());
             if (toDoManager.update(id, status)) {
@@ -184,7 +198,7 @@ public class ToDoMain implements Commands {
     }
 
     private static void deleteToDo() {
-        System.out.println("Please choose Todo from list:");
+        System.out.println("Please choose Todo id from list:");
         List<ToDo> allToDosByUser = toDoManager.getAllToDosByUser(currentUser.getId());
         for (ToDo toDo : allToDosByUser) {
             System.out.println(toDo);
@@ -195,10 +209,9 @@ public class ToDoMain implements Commands {
         ToDo byId = toDoManager.getById(id);
         if (byId.getUser().getId() == currentUser.getId()) {
             toDoManager.delete(id);
+            System.out.println("ToDo " + "<" + byId.getTitle() + ">" + " was deleted");
         } else {
             System.out.println("Wrong ID");
         }
     }
-
-
 }

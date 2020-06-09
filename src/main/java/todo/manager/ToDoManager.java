@@ -21,10 +21,10 @@ public class ToDoManager {
         try {
             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, todo.getTitle());
-            if (todo.getDeadline()!=null) {
+            if (todo.getDeadline() != null) {
                 statement.setString(2, sdf.format(todo.getDeadline()));
             } else {
-                statement.setString(2,null);
+                statement.setString(2, null);
             }
             statement.setString(3, todo.getStatus().name());
             statement.setLong(4, todo.getUser().getId());
@@ -71,14 +71,15 @@ public class ToDoManager {
         return toDos;
     }
 
+
     public List<ToDo> getAllToDosByUserAndStatus(long userId, ToDoStatus status) {
-        List<ToDo> toDos = new ArrayList<ToDo>();
-        String sql = "SELECT * FROM todo WHERE `user_id` = ? AND `status` = ?";
+        List<ToDo> toDos = new ArrayList();
+        String sql = "SELECT * FROM todo WHERE user_id = ? AND status = ?";
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setLong(1, userId);
             statement.setString(2, status.name());
-            ResultSet resultSet = statement.executeQuery(sql);
+            ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 toDos.add(getTodoFromResultSet(resultSet));
             }
@@ -93,7 +94,7 @@ public class ToDoManager {
             return ToDo.builder()
                     .id(resultSet.getLong(1))
                     .title(resultSet.getString(2))
-                    .deadline(resultSet.getString(3)==null?null:sdf.parse(resultSet.getString(3)))
+                    .deadline(resultSet.getString(3) == null ? null : sdf.parse(resultSet.getString(3)))
                     .status(ToDoStatus.valueOf(resultSet.getString(4)))
                     .user(userManager.getById(resultSet.getLong(5)))
                     .createdDate(sdf.parse(resultSet.getString(6)))
@@ -119,8 +120,8 @@ public class ToDoManager {
         return false;
     }
 
-    public boolean delete(long id){
-        String sql="DELETE FROM todo WHERE id = "+id;
+    public boolean delete(long id) {
+        String sql = "DELETE FROM todo WHERE id = " + id;
         try {
             Statement statement = connection.createStatement();
             statement.executeUpdate(sql);

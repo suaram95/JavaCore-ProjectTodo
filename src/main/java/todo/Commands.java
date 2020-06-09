@@ -15,6 +15,10 @@ public interface Commands {
     int CHANGE_TODO_STATUS = 6;
     int DELETE_TODO = 7;
 
+
+    int DISMISS = 0;
+    int ADD = 1;
+
     static void printMainCommands() {
         System.out.println("Please input " + EXIT + " to Exit");
         System.out.println("Please input " + LOGIN + " to Login");
@@ -30,6 +34,10 @@ public interface Commands {
         System.out.println("Please input " + MY_FINISHED_LIST + " to view your finished todo's list");
         System.out.println("Please input " + CHANGE_TODO_STATUS + " to change your todo status");
         System.out.println("Please input " + DELETE_TODO + " to delete your todo");
+    }
+
+    static void deadLineCommands() {
+        System.out.println("Please input " + ADD + " to write deadline of your todo, or " + DISMISS + " to dismiss");
     }
 
 
